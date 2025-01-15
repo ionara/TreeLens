@@ -124,16 +124,20 @@ with gr.Blocks() as demo:
 #demo.launch(debug=True, share=True)
 def authenticate(password):
     if password == "Newforest1!":  # Replace with your desired password
-        return demo
+        return "Correct password! Reload the page to access the app."  # Message on correct password
     else:
-        return "Access Denied: Incorrect Password."
+        return "Access Denied: Incorrect Password."  # Message on incorrect password
+
+
 
 # Password input using a regular Textbox (with type set to "password")
 auth_demo = gr.Interface(
     fn=authenticate,
-    inputs=gr.Textbox(label="Enter Password", type="password"),  # Simulates a password input
-    outputs="html",
+    inputs=gr.Textbox(label="Enter Password", type="password"),  # Password input
+    outputs="text",
     title="Protected Access"
 )
 
-auth_demo.launch(debug=True, share=True)
+if __name__ == "__main__":
+    # Launch the authentication interface first
+    auth_demo.launch(debug=True, share=True)
