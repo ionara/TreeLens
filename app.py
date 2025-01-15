@@ -123,25 +123,26 @@ with gr.Blocks() as demo:
 # Global state for password authentication
 authenticated = False
 
-def authenticate(password):
-    global authenticated
+# Global state for password authentication
+def authenticate(password, state):
     if password == "Newforest1!":  # Replace with your desired password
-        authenticated = True
-        return "Access Granted! You can now use the app."
+        state = True
+        return "Access Granted! You can now use the app.", state
     else:
-        return "Access Denied: Incorrect Password."
+        return "Access Denied: Incorrect Password.", state
 
-# Password-protected Gradio interface
-def app():
+def app(state):
     with gr.Blocks() as main_app:
-        if not authenticated:
-            # Password input screen
+        if not state:  # Show password screen
             with gr.Row():
                 password_input = gr.Textbox(label="Enter Password", type="password")
                 result = gr.Textbox(label="Output", interactive=False)
-                password_input.submit(authenticate, inputs=password_input, outputs=result)
-        else:
-            # Main app screen
+                password_input.submit(
+                    authenticate, 
+                    inputs=[password_input, gr.State()], 
+                    outputs=[result, gr.State()]
+                )
+        else:  # Show main app
             with gr.Row():
                 image_input = gr.File(file_types=["image"], label="Upload an Image")
                 file_output = gr.Textbox(label="File Path")
@@ -156,4 +157,6 @@ def app():
     return main_app
 
 # Launch the app
-app().launch(debug=True, share=True)
+with gr.Blocks() as demo:
+    state = gr.State(False)  # Initialize the state for authentication
+    app(state).launch(debug=True, share=True)
