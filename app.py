@@ -105,3 +105,20 @@ def process_uploaded_files(file):
         return file_path, f"Error: {e}"
 
     return file_path, response
+
+# Gradio interface setup
+with gr.Blocks() as demo:
+    image_input = gr.File(file_types=["image"], label="Upload an Image")
+    file_output = gr.Textbox(label="File Path")
+    response_output = gr.Textbox(label="Analysis Result")
+
+    # Set up the upload event
+    image_input.change(
+        process_uploaded_files,
+        inputs=image_input,
+        outputs=[file_output, response_output],
+    )
+
+# Launch the Gradio interface
+# demo.launch(debug=True, server_port=7861)
+demo.launch(debug=True, share=True)
