@@ -122,15 +122,24 @@ with gr.Blocks() as demo:
 # Launch the Gradio interface
 # demo.launch(debug=True, server_port=7861)
 #demo.launch(debug=True, share=True)
+# Gradio state to manage access
+is_authenticated = False
+
 def authenticate(password):
+    global is_authenticated  # Use a global variable to track state
     if password == "Newforest1!":  # Replace with your desired password
-        return "Correct password! Reload the page to access the app."  # Message on correct password
+        is_authenticated = True
+        return "Access Granted! Refresh to access the app."
     else:
-        return "Access Denied: Incorrect Password."  # Message on incorrect password
+        return "Access Denied: Incorrect Password."
 
+def show_interface():
+    if is_authenticated:
+        return demo
+    else:
+        return auth_demo
 
-
-# Password input using a regular Textbox (with type set to "password")
+# Password-protected interface
 auth_demo = gr.Interface(
     fn=authenticate,
     inputs=gr.Textbox(label="Enter Password", type="password"),  # Password input
@@ -138,6 +147,17 @@ auth_demo = gr.Interface(
     title="Protected Access"
 )
 
-if __name__ == "__main__":
-    # Launch the authentication interface first
-    auth_demo.launch(debug=True, share=True)
+# Main interface
+with gr.Blocks() as demo:
+    image_input = gr.File(file_types=["image"], label="Upload an Image")
+    file_output = gr.Textbox(label="File Path")
+    response_output = gr.Textbox(label="Analysis Result")
+
+    image_input.change(
+        process_uploaded_files,
+        inputs=image_input,
+        outputs=[file_output, response_output],
+    )
+
+# Launch the appropriate interface
+show_interface().launch(debug=True, share=True)
