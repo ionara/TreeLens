@@ -109,34 +109,39 @@ def process_uploaded_files(file):
 # Password-protected Gradio interface
 PASSWORD = "Newforest1!"  # Replace with your desired password
 
+# Authentication function
 def authenticate(password):
     if password == PASSWORD:
-        return gr.update(visible=True), gr.update(visible=False)
+        return gr.update(visible=True), gr.update(value="Access Granted!")
     else:
-        return gr.update(visible=False), "Access Denied: Incorrect Password."
+        return gr.update(visible=False), gr.update(value="Access Denied: Incorrect Password.")
 
+# Gradio interface setup
 with gr.Blocks() as demo:
+    # Password input and status row
     with gr.Row():
-        password_input = gr.Textbox(label="Enter Password", type="password")
+        password_input = gr.Textbox(label="Enter Password", type="password", interactive=True)
         auth_status = gr.Textbox(label="Authentication Status", interactive=False)
-        main_app = gr.Column(visible=False)
-    with main_app:
+
+    # Main app (hidden by default)
+    with gr.Column(visible=False) as main_app:
         image_input = gr.File(file_types=["image"], label="Upload an Image")
         file_output = gr.Textbox(label="File Path")
         response_output = gr.Textbox(label="Analysis Result")
 
+        # File upload and processing
         image_input.change(
             process_uploaded_files,
             inputs=image_input,
             outputs=[file_output, response_output],
         )
 
-    # Bind password input to authentication
+    # Bind password submission to authentication
     password_input.submit(
         authenticate,
         inputs=password_input,
         outputs=[main_app, auth_status]
     )
 
-# Launch the Gradio interface
+# Launch the app
 demo.launch(debug=True, share=True)
