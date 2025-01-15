@@ -130,8 +130,9 @@ def authenticate(password):
 
 auth_demo = gr.Interface(
     fn=authenticate,
-    inputs=password,
+    inputs="password",
     outputs="html",
     title="Protected Access"
 )
+
 auth_demo.launch(debug=True, share=True)
