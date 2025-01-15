@@ -121,4 +121,17 @@ with gr.Blocks() as demo:
 
 # Launch the Gradio interface
 # demo.launch(debug=True, server_port=7861)
-demo.launch(debug=True, share=True)
+#demo.launch(debug=True, share=True)
+def authenticate(password):
+    if password == "Newforest1!":  # Replace with your desired password
+        return demo
+    else:
+        return "Access Denied: Incorrect Password."
+
+auth_demo = gr.Interface(
+    fn=authenticate,
+    inputs=password,
+    outputs="html",
+    title="Protected Access"
+)
+auth_demo.launch(debug=True, share=True)
