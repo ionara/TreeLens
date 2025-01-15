@@ -119,37 +119,41 @@ with gr.Blocks() as demo:
         outputs=[file_output, response_output],
     )
 
-# Launch the Gradio interface
-# demo.launch(debug=True, server_port=7861)
-#demo.launch(debug=True, share=True)
-# Gradio state to manage access
-# Define the authentication function
-def authenticate(password):
-    if password == "Newforest1!":  # Replace with your desired password
-        # Return the main app immediately if the password is correct
-        with gr.Blocks() as demo:
-            image_input = gr.File(file_types=["image"], label="Upload an Image")
-            file_output = gr.Textbox(label="File Path")
-            response_output = gr.Textbox(label="Analysis Result")
 
-            # Set up the upload event
-            image_input.change(
-                process_uploaded_files,
-                inputs=image_input,
-                outputs=[file_output, response_output],
-            )
-        return demo
+# Global state for password authentication
+authenticated = False
+
+def authenticate(password):
+    global authenticated
+    if password == "Newforest1!":  # Replace with your desired password
+        authenticated = True
+        return "Access Granted! You can now use the app."
     else:
-        # Show an error message if the password is incorrect
         return "Access Denied: Incorrect Password."
 
-# Password-protected interface
-auth_demo = gr.Interface(
-    fn=authenticate,
-    inputs=gr.Textbox(label="Enter Password", type="password"),
-    outputs="component",  # Allows returning a Gradio component like `Blocks`
-    title="Protected Access"
-)
+# Password-protected Gradio interface
+def app():
+    with gr.Blocks() as main_app:
+        if not authenticated:
+            # Password input screen
+            with gr.Row():
+                password_input = gr.Textbox(label="Enter Password", type="password")
+                result = gr.Textbox(label="Output", interactive=False)
+                password_input.submit(authenticate, inputs=password_input, outputs=result)
+        else:
+            # Main app screen
+            with gr.Row():
+                image_input = gr.File(file_types=["image"], label="Upload an Image")
+                file_output = gr.Textbox(label="File Path")
+                response_output = gr.Textbox(label="Analysis Result")
+                
+                # File upload and processing
+                image_input.change(
+                    process_uploaded_files,
+                    inputs=image_input,
+                    outputs=[file_output, response_output],
+                )
+    return main_app
 
-# Launch the password-protected app
-auth_demo.launch(debug=True, share=True)
+# Launch the app
+app().launch(debug=True, share=True)
