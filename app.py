@@ -106,19 +106,37 @@ def process_uploaded_files(file):
 
     return file_path, response
 
-# Gradio interface setup
-with gr.Blocks() as demo:
-    image_input = gr.File(file_types=["image"], label="Upload an Image")
-    file_output = gr.Textbox(label="File Path")
-    response_output = gr.Textbox(label="Analysis Result")
+# Password-protected Gradio interface
+PASSWORD = "Newforest1!"  # Replace with your desired password
 
-    # Set up the upload event
-    image_input.change(
-        process_uploaded_files,
-        inputs=image_input,
-        outputs=[file_output, response_output],
+def authenticate(password):
+    if password == PASSWORD:
+        return gr.update(visible=True), gr.update(visible=False)
+    else:
+        return gr.update(visible=False), "Access Denied: Incorrect Password."
+
+with gr.Blocks() as demo:
+    with gr.Row():
+        password_input = gr.Textbox(label="Enter Password", type="password")
+        auth_status = gr.Textbox(label="Authentication Status", interactive=False)
+        main_app = gr.Column(visible=False)
+ with main_app:
+        image_input = gr.File(file_types=["image"], label="Upload an Image")
+        file_output = gr.Textbox(label="File Path")
+        response_output = gr.Textbox(label="Analysis Result")
+
+        image_input.change(
+            process_uploaded_files,
+            inputs=image_input,
+            outputs=[file_output, response_output],
+        )
+
+    # Bind password input to authentication
+    password_input.submit(
+        authenticate,
+        inputs=password_input,
+        outputs=[main_app, auth_status]
     )
 
 # Launch the Gradio interface
-# demo.launch(debug=True, server_port=7861)
 demo.launch(debug=True, share=True)
