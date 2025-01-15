@@ -135,7 +135,7 @@ with gr.Blocks() as demo:
             inputs=image_input,
             outputs=[file_output, response_output],
         )
-
+# i will make a comment just to commit again
     # Bind password submission to authentication
     password_input.submit(
         authenticate,
