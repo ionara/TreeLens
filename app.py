@@ -128,9 +128,10 @@ def authenticate(password):
     else:
         return "Access Denied: Incorrect Password."
 
+# Password input using a regular Textbox (with type set to "password")
 auth_demo = gr.Interface(
     fn=authenticate,
-    inputs="password",
+    inputs=gr.Textbox(label="Enter Password", type="password"),  # Simulates a password input
     outputs="html",
     title="Protected Access"
 )
