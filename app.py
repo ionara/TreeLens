@@ -120,7 +120,7 @@ with gr.Blocks() as demo:
         password_input = gr.Textbox(label="Enter Password", type="password")
         auth_status = gr.Textbox(label="Authentication Status", interactive=False)
         main_app = gr.Column(visible=False)
- with main_app:
+    with main_app:
         image_input = gr.File(file_types=["image"], label="Upload an Image")
         file_output = gr.Textbox(label="File Path")
         response_output = gr.Textbox(label="Analysis Result")
