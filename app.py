@@ -123,41 +123,33 @@ with gr.Blocks() as demo:
 # demo.launch(debug=True, server_port=7861)
 #demo.launch(debug=True, share=True)
 # Gradio state to manage access
-is_authenticated = False
-
+# Define the authentication function
 def authenticate(password):
-    global is_authenticated  # Use a global variable to track state
     if password == "Newforest1!":  # Replace with your desired password
-        is_authenticated = True
-        return "Access Granted! Refresh to access the app."
-    else:
-        return "Access Denied: Incorrect Password."
+        # Return the main app immediately if the password is correct
+        with gr.Blocks() as demo:
+            image_input = gr.File(file_types=["image"], label="Upload an Image")
+            file_output = gr.Textbox(label="File Path")
+            response_output = gr.Textbox(label="Analysis Result")
 
-def show_interface():
-    if is_authenticated:
+            # Set up the upload event
+            image_input.change(
+                process_uploaded_files,
+                inputs=image_input,
+                outputs=[file_output, response_output],
+            )
         return demo
     else:
-        return auth_demo
+        # Show an error message if the password is incorrect
+        return "Access Denied: Incorrect Password."
 
 # Password-protected interface
 auth_demo = gr.Interface(
     fn=authenticate,
-    inputs=gr.Textbox(label="Enter Password", type="password"),  # Password input
-    outputs="text",
+    inputs=gr.Textbox(label="Enter Password", type="password"),
+    outputs="component",  # Allows returning a Gradio component like `Blocks`
     title="Protected Access"
 )
 
-# Main interface
-with gr.Blocks() as demo:
-    image_input = gr.File(file_types=["image"], label="Upload an Image")
-    file_output = gr.Textbox(label="File Path")
-    response_output = gr.Textbox(label="Analysis Result")
-
-    image_input.change(
-        process_uploaded_files,
-        inputs=image_input,
-        outputs=[file_output, response_output],
-    )
-
-# Launch the appropriate interface
-show_interface().launch(debug=True, share=True)
+# Launch the password-protected app
+auth_demo.launch(debug=True, share=True)
