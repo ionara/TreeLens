@@ -1,3 +1,3 @@
 gradio>=3.31.0
-oogle-generativeai
+google-generativeai
 python-dotenv
